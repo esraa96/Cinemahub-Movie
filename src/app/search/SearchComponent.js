@@ -149,7 +149,7 @@ export default function SearchComponent() {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-6">
                       {allMovies.map((movie, index) => (
                         <motion.div
                           key={`${movie.id}-${index}`}

@@ -61,8 +61,8 @@ export function NavBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="text-2xl">🎬</div>
-            <span className="text-xl font-bold text-gradient">CinemaHub</span>
+            <div className="text-xl sm:text-2xl">🎬</div>
+            <span className="text-lg sm:text-xl font-bold text-gradient">CinemaHub</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -77,7 +77,7 @@ export function NavBar() {
             </Link>
           </div>
 
-          <SearchBar className="hidden md:block max-w-md mx-4 flex-1" />
+          <SearchBar className="hidden sm:block max-w-md mx-4 flex-1" />
 
           <div className="hidden md:flex items-center space-x-4">
             <button
@@ -117,14 +117,14 @@ export function NavBar() {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-gray-300 hover:text-white"
+            className="sm:hidden text-gray-300 hover:text-white"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
+          <div className="sm:hidden py-4 border-t border-gray-800">
             <div className="space-y-4">
               <SearchBar className="w-full" />
 

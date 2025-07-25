@@ -82,7 +82,7 @@ export function MovieCard({ movie, showFavorite = true, onFavoriteChange }) {
       className="group cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cinema-gold/20 transition-all duration-300">
+      <div className="relative bg-gray-900 dark:bg-gray-800 rounded-lg sm:rounded-xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-cinema-gold/20 transition-all duration-300">
         {/* Poster Image */}
         <div className="relative aspect-[2/3] overflow-hidden">
           <Image
@@ -111,10 +111,10 @@ export function MovieCard({ movie, showFavorite = true, onFavoriteChange }) {
           {/* Rating Badge */}
           {rating !== 'N/A' && (
             <motion.div 
-              className="absolute top-3 right-3 bg-black/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1 border border-cinema-gold/30"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/90 backdrop-blur-sm rounded-full px-2 py-1 sm:px-3 sm:py-1 flex items-center space-x-1 border border-cinema-gold/30"
               whileHover={{ scale: 1.1 }}
             >
-              <Star className="text-cinema-gold" size={12} fill="currentColor" />
+              <Star className="text-cinema-gold" size={10} fill="currentColor" />
               <span className="text-white text-xs font-bold">{rating}</span>
             </motion.div>
           )}
@@ -124,12 +124,12 @@ export function MovieCard({ movie, showFavorite = true, onFavoriteChange }) {
             <motion.button
               onClick={handleFavoriteToggle}
               disabled={isLoading}
-              className="absolute top-3 left-3 bg-black/90 backdrop-blur-sm rounded-full p-2 hover:bg-red-600/90 transition-all duration-200 border border-white/20"
+              className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/90 backdrop-blur-sm rounded-full p-1.5 sm:p-2 hover:bg-red-600/90 transition-all duration-200 border border-white/20"
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
             >
               <Heart
-                size={14}
+                size={12}
                 className={`transition-all duration-200 ${
                   isFavorite ? 'text-red-400 fill-current' : 'text-white hover:text-red-400'
                 }`}
@@ -138,13 +138,13 @@ export function MovieCard({ movie, showFavorite = true, onFavoriteChange }) {
           )}
 
           {/* Quick Info Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-            <div className="bg-black/90 backdrop-blur-sm rounded-lg p-3 space-y-2">
-              <h4 className="text-white font-semibold text-sm line-clamp-1">{movie.title}</h4>
+          <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+            <div className="bg-black/90 backdrop-blur-sm rounded-lg p-2 sm:p-3 space-y-1 sm:space-y-2">
+              <h4 className="text-white font-semibold text-xs sm:text-sm line-clamp-1">{movie.title}</h4>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-cinema-gold">{releaseYear}</span>
                 <div className="flex items-center space-x-1 text-gray-300">
-                  <Star size={10} className="text-cinema-gold" fill="currentColor" />
+                  <Star size={8} className="text-cinema-gold" fill="currentColor" />
                   <span>{rating}</span>
                 </div>
               </div>
@@ -153,20 +153,20 @@ export function MovieCard({ movie, showFavorite = true, onFavoriteChange }) {
         </div>
 
         {/* Movie Info */}
-        <div className="p-4 bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900">
-          <h3 className="font-semibold text-white text-sm mb-2 line-clamp-2 group-hover:text-cinema-gold transition-colors duration-200">
+        <div className="p-2 sm:p-4 bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900">
+          <h3 className="font-semibold text-white text-xs sm:text-sm mb-1 sm:mb-2 line-clamp-2 group-hover:text-cinema-gold transition-colors duration-200">
             {movie.title}
           </h3>
           
           <div className="flex items-center justify-between text-gray-400 text-xs">
             <div className="flex items-center space-x-1">
-              <Calendar size={12} />
-              <span>{releaseYear}</span>
+              <Calendar size={10} />
+              <span className="text-xs">{releaseYear}</span>
             </div>
             
             {movie.vote_count > 0 && (
-              <span className="text-gray-500 bg-gray-800 px-2 py-1 rounded-full">
-                {movie.vote_count > 1000 ? `${(movie.vote_count/1000).toFixed(1)}k` : movie.vote_count} votes
+              <span className="text-gray-500 bg-gray-800 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs">
+                {movie.vote_count > 1000 ? `${(movie.vote_count/1000).toFixed(1)}k` : movie.vote_count}
               </span>
             )}
           </div>

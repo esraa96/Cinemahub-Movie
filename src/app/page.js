@@ -84,7 +84,7 @@ export default function Home() {
       </Head>
       <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[80vh] overflow-hidden">
+      <section className="relative h-[60vh] sm:h-[80vh] overflow-hidden">
         {featuredMovie ? (
           <>
             <div 
@@ -95,17 +95,17 @@ export default function Home() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/50 to-transparent" />
             <div className="relative z-10 flex items-end h-full">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-20">
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
                   className="max-w-2xl"
                 >
-                  <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+                  <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold text-white mb-4 sm:mb-6">
                     Welcome to <span className="text-gradient">CinemaHub</span>
                   </h1>
-                  <p className="text-xl text-gray-300 mb-8 leading-relaxed">
+                  <p className="text-base sm:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed">
                     Discover millions of movies, create your watchlist, and join the ultimate movie community.
                   </p>
                   
@@ -137,16 +137,16 @@ export default function Home() {
         )}
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-6 sm:py-12">
         {/* Trending Movies */}
-        <section className="mb-16">
-          <div className="flex items-center space-x-3 mb-8">
-            <TrendingUp className="text-cinema-gold" size={28} />
-            <h2 className="text-3xl font-bold text-white">Trending Today</h2>
+        <section className="mb-8 sm:mb-16">
+          <div className="flex items-center space-x-2 sm:space-x-3 mb-6 sm:mb-8">
+            <TrendingUp className="text-cinema-gold" size={20} />
+            <h2 className="text-xl sm:text-3xl font-bold text-white">Trending Today</h2>
           </div>
           
           {trendingMovies ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-6">
               {trendingMovies.results.slice(0, 12).map((movie) => (
                 <MovieCard key={movie.id} movie={movie} showFavorite={!!session} />
               ))}
@@ -164,7 +164,7 @@ export default function Home() {
           </div>
           
           {popularMovies ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-6">
               {popularMovies.results.slice(0, 12).map((movie) => (
                 <MovieCard key={movie.id} movie={movie} showFavorite={!!session} />
               ))}
@@ -207,7 +207,7 @@ export default function Home() {
             loading={loadingMore}
           >
             {nowPlayingMovies.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-6">
                 {nowPlayingMovies.map((movie, index) => (
                   <motion.div
                     key={`${movie.id}-${index}`}

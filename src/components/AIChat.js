@@ -58,9 +58,9 @@ export function AIChat({ className = '' }) {
       {/* Chat Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white p-3 sm:p-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
       >
-        <Sparkles size={24} />
+        <Sparkles size={20} className="sm:w-6 sm:h-6" />
       </button>
 
       {/* Chat Window */}
@@ -70,7 +70,7 @@ export function AIChat({ className = '' }) {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-6 z-40 w-96 max-w-[calc(100vw-2rem)] bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-2xl"
+            className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-40 w-[calc(100vw-2rem)] sm:w-96 max-w-[calc(100vw-2rem)] bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-2xl shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
