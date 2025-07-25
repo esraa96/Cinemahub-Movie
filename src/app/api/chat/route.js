@@ -8,6 +8,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
+    // Check if API key exists
+    if (!process.env.OPENAI_API_KEY) {
+      console.error('OpenAI API key not found')
+      return NextResponse.json({ 
+        response: 'Hi! I\'m a movie AI assistant, but I need an OpenAI API key to work properly. Please add your OPENAI_API_KEY to the environment variables.' 
+      })
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -32,7 +40,16 @@ export async function POST(request) {
     })
 
     if (!response.ok) {
-      throw new Error('OpenAI API request failed')
+      const errorData = await response.json().catch(() => ({}))
+      console.error('OpenAI API Error:', response.status, errorData)
+      
+      if (response.status === 401) {
+        return NextResponse.json({ 
+          response: 'Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable.' 
+        })
+      }
+      
+      throw new Error(`OpenAI API request failed: ${response.status}`)
     }
 
     const data = await response.json()
@@ -41,9 +58,8 @@ export async function POST(request) {
     return NextResponse.json({ response: aiResponse })
   } catch (error) {
     console.error('OpenAI API Error:', error)
-    return NextResponse.json(
-      { error: 'Failed to get AI response' },
-      { status: 500 }
-    )
+    return NextResponse.json({ 
+      response: 'Sorry, I\'m having trouble connecting right now. Please make sure the OpenAI API key is properly configured.' 
+    })
   }
 }
