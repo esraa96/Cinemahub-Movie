@@ -9,25 +9,30 @@ export async function POST(request) {
     }
 
     // Check if API key exists
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('OpenAI API key not found')
+    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY
+    const apiUrl = process.env.DEEPSEEK_API_KEY 
+      ? 'https://api.deepseek.com/v1/chat/completions'
+      : 'https://api.openai.com/v1/chat/completions'
+    const model = process.env.DEEPSEEK_API_KEY ? 'deepseek-chat' : 'gpt-3.5-turbo'
+
+    if (!apiKey) {
       return NextResponse.json({ 
-        response: 'Hi! I\'m a movie AI assistant, but I need an OpenAI API key to work properly. Please add your OPENAI_API_KEY to the environment variables.' 
+        response: 'Hi! I\'m a movie AI assistant, but I need an API key to work properly. Please add DEEPSEEK_API_KEY or OPENAI_API_KEY to your environment variables.' 
       })
     }
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: model,
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful movie assistant. You can recommend movies, provide information about actors, directors, genres, and answer any movie-related questions. Keep your responses concise and engaging.'
+            content: 'You are a helpful movie assistant. You can recommend movies, provide information about actors, directors, genres, and answer any movie-related questions. Keep your responses concise and engaging. Answer in Arabic if the user asks in Arabic.'
           },
           {
             role: 'user',
@@ -40,26 +45,28 @@ export async function POST(request) {
     })
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      console.error('OpenAI API Error:', response.status, errorData)
+      const errorText = await response.text()
+      console.error('API Error:', response.status, errorText)
       
       if (response.status === 401) {
         return NextResponse.json({ 
-          response: 'Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable.' 
+          response: 'Invalid API key. Please check your API key configuration.' 
         })
       }
       
-      throw new Error(`OpenAI API request failed: ${response.status}`)
+      return NextResponse.json({ 
+        response: 'Sorry, I\'m having trouble connecting to the AI service right now. Please try again later.' 
+      })
     }
 
     const data = await response.json()
-    const aiResponse = data.choices[0]?.message?.content || 'Sorry, I could not generate a response.'
+    const aiResponse = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.'
 
     return NextResponse.json({ response: aiResponse })
   } catch (error) {
-    console.error('OpenAI API Error:', error)
+    console.error('AI API Error:', error)
     return NextResponse.json({ 
-      response: 'Sorry, I\'m having trouble connecting right now. Please make sure the OpenAI API key is properly configured.' 
+      response: 'Sorry, I encountered an error. Please try again later.' 
     })
   }
 }
