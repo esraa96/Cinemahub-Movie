@@ -8,28 +8,28 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 })
     }
 
-    // Check if API key exists
-    const apiKey = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY
-    console.log('API Key exists:', !!apiKey)
-    const apiUrl = process.env.DEEPSEEK_API_KEY 
-      ? 'https://api.deepseek.com/v1/chat/completions'
-      : 'https://api.openai.com/v1/chat/completions'
-    const model = process.env.DEEPSEEK_API_KEY ? 'deepseek-chat' : 'gpt-3.5-turbo'
+    const apiKey = process.env.OPENROUTER_API_KEY
 
     if (!apiKey) {
       return NextResponse.json({ 
-        response: 'Hi! I\'m a movie AI assistant, but I need an API key to work properly. Please add DEEPSEEK_API_KEY or OPENAI_API_KEY to your environment variables.' 
+        response: 'عذراً، المساعد الذكي غير متاح حالياً. يرجى المحاولة لاحقاً.' 
       })
     }
 
-    const response = await fetch(apiUrl, {
+    // Create AbortController for timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'http://localhost:3000',
+        'X-Title': 'CinemaHub Movie Assistant'
       },
       body: JSON.stringify({
-        model: model,
+        model: 'meta-llama/llama-3.2-3b-instruct:free',
         messages: [
           {
             role: 'system',
@@ -40,34 +40,38 @@ export async function POST(request) {
             content: message
           }
         ],
-        max_tokens: 500,
+        max_tokens: 300,
         temperature: 0.7,
       }),
+      signal: controller.signal
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('API Error:', response.status, errorText)
-      
-      if (response.status === 401) {
-        return NextResponse.json({ 
-          response: 'Invalid API key. Please check your API key configuration.' 
-        })
-      }
+      console.error('OpenRouter API Error:', response.status, errorText)
       
       return NextResponse.json({ 
-        response: 'Sorry, I\'m having trouble connecting to the AI service right now. Please try again later.' 
+        response: 'عذراً، المساعد الذكي مشغول حالياً. يرجى المحاولة مرة أخرى خلال دقائق قليلة.' 
       })
     }
 
     const data = await response.json()
-    const aiResponse = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.'
+    const aiResponse = data.choices?.[0]?.message?.content || 'عذراً، لم أتمكن من إنشاء رد. يرجى المحاولة مرة أخرى.'
 
     return NextResponse.json({ response: aiResponse })
+
   } catch (error) {
-    console.error('AI API Error:', error)
+    if (error.name === 'AbortError') {
+      return NextResponse.json({ 
+        response: 'عذراً، استغرق الرد وقتاً أطول من المتوقع. يرجى المحاولة مرة أخرى.' 
+      })
+    }
+    
+    console.error('API Error:', error)
     return NextResponse.json({ 
-      response: 'Sorry, I encountered an error. Please try again later.' 
+      response: 'عذراً، حدث خطأ مؤقت. يرجى المحاولة مرة أخرى.' 
     })
   }
 }

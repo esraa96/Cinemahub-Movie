@@ -19,7 +19,7 @@ export function AIChat({ className = '' }) {
     setMessage('')
     setLoading(true)
 
-    // Add user message to conversation
+   
     setConversation(prev => [...prev, { role: 'user', content: userMessage }])
 
     try {
