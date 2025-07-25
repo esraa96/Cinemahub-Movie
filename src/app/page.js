@@ -6,6 +6,7 @@ import { MovieCard } from '@/components/MovieCard'
 import { MovieGridSkeleton, HeroSkeleton } from '@/components/LoadingSkeleton'
 import { ErrorMessage, NetworkError } from '@/components/ErrorBoundary'
 import { InfiniteScroll } from '@/components/InfiniteScroll'
+import { InlineAIChat } from '@/components/InlineAIChat'
 import { tmdbAPI } from '@/lib/tmdb'
 import { Search, TrendingUp, Clock, Star, Filter } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -171,6 +172,14 @@ export default function Home() {
           ) : (
             <MovieGridSkeleton count={12} />
           )}
+        </section>
+
+        {/* AI Chat Section */}
+        <section className="mb-16">
+          <InlineAIChat 
+            title="Discover Movies with AI" 
+            placeholder="Ask for movie recommendations, actor info, or anything about cinema..."
+          />
         </section>
 
         {/* Now Playing with Infinite Scroll */}

@@ -4,6 +4,7 @@ import { Providers } from '@/components/Providers'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
+import { AIChat } from '@/components/AIChat'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
@@ -82,6 +83,7 @@ export default function RootLayout({ children }) {
                 {children}
               </main>
               <Footer />
+              <AIChat />
             </div>
           </ThemeProvider>
             <Toaster
