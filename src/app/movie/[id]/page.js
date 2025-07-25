@@ -27,7 +27,7 @@ export default function MovieDetailsPage() {
       fetchMovieDetails()
       checkFavoriteStatus()
     }
-  }, [movieId])
+  }, [movieId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchMovieDetails = async () => {
     try {

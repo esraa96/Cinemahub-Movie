@@ -160,7 +160,7 @@ export default function FavoritesPage() {
                 {searchQuery && (
                   <div className="mb-6 text-gray-400 text-sm">
                     {filteredFavorites.length === 0 ? (
-                      <p>No favorites found matching "{searchQuery}"</p>
+                      <p>No favorites found matching &quot;{searchQuery}&quot;</p>
                     ) : (
                       <p>Showing {filteredFavorites.length} of {favorites.length} favorites</p>
                     )}
@@ -201,7 +201,7 @@ export default function FavoritesPage() {
                       No matches found
                     </h3>
                     <p className="text-gray-400 mb-6">
-                      No favorites match "{searchQuery}". Try a different search term.
+                      No favorites match &quot;{searchQuery}&quot;. Try a different search term.
                     </p>
                     <button
                       onClick={() => setSearchQuery('')}
