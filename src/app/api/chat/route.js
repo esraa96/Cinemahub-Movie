@@ -10,6 +10,7 @@ export async function POST(request) {
 
     // Check if API key exists
     const apiKey = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY
+    console.log('API Key exists:', !!apiKey)
     const apiUrl = process.env.DEEPSEEK_API_KEY 
       ? 'https://api.deepseek.com/v1/chat/completions'
       : 'https://api.openai.com/v1/chat/completions'
