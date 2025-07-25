@@ -37,23 +37,4 @@ A modern, responsive movie discovery platform built with Next.js 15, featuring u
 
 
 
-## 📸 Screenshots
-
-### Home Page
-![Home Page](./screenshots/home-page.png)
-
-### Movie Details
-![Movie Details](./screenshots/movie-details.png)
-
-### Search Functionality
-![Search](./screenshots/search.png)
-
-### Favorites Page
-![Favorites](./screenshots/favorites.png)
-
-### Authentication
-![Authentication](./screenshots/auth.png)
-
-### Dark/Light Mode
-![Theme Toggle](./screenshots/theme-toggle.png)
 
