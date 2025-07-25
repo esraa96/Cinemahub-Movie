@@ -48,7 +48,7 @@ export default function NotFound() {
             transition={{ delay: 0.6 }}
           >
             Looks like this page went to grab some popcorn and never came back. 
-            Don't worry, there are plenty of great movies waiting for you!
+            Don&apos;t worry, there are plenty of great movies waiting for you!
           </motion.p>
 
           {/* Action Buttons */}
