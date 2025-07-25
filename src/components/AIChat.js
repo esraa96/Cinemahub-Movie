@@ -107,7 +107,8 @@ export function AIChat({ className = '' }) {
                 <div className="text-center text-gray-400 py-8">
                   <Bot size={32} className="mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Ask me anything about movies!</p>
-                  <p className="text-xs mt-1">Try: "Recommend a sci-fi movie" or "Tell me about Tom Hanks"</p>
+                 <p>The word &quot;movie&quot; means &quot;film&quot;, and &quot;cinema&quot; means &quot;theater&quot;.</p>
+
                 </div>
               ) : (
                 conversation.map((msg, index) => (
