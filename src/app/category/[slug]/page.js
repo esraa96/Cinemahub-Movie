@@ -87,8 +87,8 @@ export default function CategoryPage() {
   }
 
   const { data, error, mutate } = useSWR(
-    isSearching ? null : [slug, currentPage],
-    () => config.fetchFunction(currentPage),
+    !isSearching ? [slug, currentPage] : null,
+    !isSearching ? () => config.fetchFunction(currentPage) : null,
     {
       onSuccess: (data) => {
         if (currentPage === 1) {
@@ -104,7 +104,7 @@ export default function CategoryPage() {
 
   const { data: searchData, error: searchError } = useSWR(
     isSearching && searchQuery ? ['search', slug, searchQuery, currentPage] : null,
-    () => config.searchFunction(searchQuery, currentPage),
+    isSearching && searchQuery ? () => config.searchFunction(searchQuery, currentPage) : null,
     {
       onSuccess: (data) => {
         if (currentPage === 1) {
