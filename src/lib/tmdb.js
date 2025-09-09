@@ -78,5 +78,49 @@ export const tmdbAPI = {
   getBackdropURL: (path, size = 'w1280') => {
     if (!path) return null;
     return `${IMAGE_BASE_URL}/${size}${path}`;
+  },
+
+  // TV Shows
+  getPopularTVShows: async (page = 1) => {
+    return fetchWithErrorHandling(`${baseURL}/tv/popular?api_key=${apiKey}&page=${page}`);
+  },
+
+  getTrendingTVShows: async (timeWindow = 'day') => {
+    return fetchWithErrorHandling(`${baseURL}/trending/tv/${timeWindow}?api_key=${apiKey}`);
+  },
+
+  getOnTheAirTVShows: async (page = 1) => {
+    return fetchWithErrorHandling(`${baseURL}/tv/on_the_air?api_key=${apiKey}&page=${page}`);
+  },
+
+  // Anime Movies (Japanese movies with animation genre)
+  getAnimeMovies: async (page = 1) => {
+    return fetchWithErrorHandling(
+      `${baseURL}/discover/movie?api_key=${apiKey}&with_genres=16&with_original_language=ja&page=${page}&sort_by=popularity.desc`
+    );
+  },
+
+  // Top Rated Movies
+  getTopRatedMovies: async (page = 1) => {
+    return fetchWithErrorHandling(`${baseURL}/movie/top_rated?api_key=${apiKey}&page=${page}`);
+  },
+
+  // Upcoming Movies
+  getUpcomingMovies: async (page = 1) => {
+    return fetchWithErrorHandling(`${baseURL}/movie/upcoming?api_key=${apiKey}&page=${page}`);
+  },
+
+  // Search TV Shows
+  searchTVShows: async (query, page = 1) => {
+    return fetchWithErrorHandling(
+      `${baseURL}/search/tv?api_key=${apiKey}&query=${encodeURIComponent(query)}&page=${page}`
+    );
+  },
+
+  // Get TV Show Details
+  getTVShowDetails: async (tvId) => {
+    return fetchWithErrorHandling(
+      `${baseURL}/tv/${tvId}?api_key=${apiKey}&append_to_response=credits,videos,similar`
+    );
   }
 };

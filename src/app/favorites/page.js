@@ -43,16 +43,16 @@ export default function FavoritesPage() {
     }
   }
 
-  const removeFavorite = (movieId) => {
-    const updated = favorites.filter(fav => fav.id !== movieId)
+  const removeFavorite = (itemId, itemType = 'movie') => {
+    const updated = favorites.filter(fav => !(fav.id === itemId && (fav.type || 'movie') === itemType))
     localStorage.setItem('favorites', JSON.stringify(updated))
     setFavorites(updated)
     toast.success('Removed from favorites')
   }
 
   // Filter and sort favorites
-  const filteredFavorites = favorites.filter(movie => 
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFavorites = favorites.filter(item => 
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const sortedFavorites = [...filteredFavorites].sort((a, b) => {
@@ -69,6 +69,8 @@ export default function FavoritesPage() {
         const yearA = a.release_date ? new Date(a.release_date).getFullYear() : 0
         const yearB = b.release_date ? new Date(b.release_date).getFullYear() : 0
         return yearB - yearA
+      case 'type':
+        return (a.type || 'movie').localeCompare(b.type || 'movie')
       default:
         return 0
     }
@@ -106,7 +108,7 @@ export default function FavoritesPage() {
                 <h1 className="text-4xl md:text-5xl font-bold text-white">My Favorites</h1>
               </div>
               <p className="text-xl text-gray-300">
-                {favorites.length} movies in your collection
+                {favorites.length} items in your collection
               </p>
             </motion.div>
           </div>
@@ -143,6 +145,7 @@ export default function FavoritesPage() {
                         <option value="rating">Highest Rated</option>
                         <option value="title">A-Z</option>
                         <option value="year">Release Year</option>
+                        <option value="type">Type (Movies/TV)</option>
                       </select>
                     </div>
                   </div>
@@ -182,10 +185,11 @@ export default function FavoritesPage() {
                           movie={movie} 
                           showFavorite={true}
                           onFavoriteChange={handleFavoriteChange}
+                          type={movie.type || 'movie'}
                         />
                         {/* Quick Remove Button */}
                         <button
-                          onClick={() => removeFavorite(movie.id)}
+                          onClick={() => removeFavorite(movie.id, movie.type || 'movie')}
                           className="absolute top-2 right-2 bg-red-600/80 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
                           title="Remove from favorites"
                         >
@@ -224,15 +228,15 @@ export default function FavoritesPage() {
                   No Favorites Yet
                 </h2>
                 <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-                  Start building your movie collection by adding movies to your favorites. 
-                  Click the heart icon on any movie card to add it here.
+                  Start building your collection by adding movies and TV shows to your favorites. 
+                  Click the heart icon on any card to add it here.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href="/" className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black px-8 py-3 rounded-lg font-semibold transition-all duration-200">
-                    Discover Movies
+                    Discover Content
                   </Link>
                   <Link href="/search" className="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200">
-                    Search Movies
+                    Search Content
                   </Link>
                 </div>
               </motion.div>

@@ -8,7 +8,7 @@ import { MovieGridSkeleton } from '@/components/LoadingSkeleton'
 import { ErrorMessage } from '@/components/ErrorBoundary'
 import { InfiniteScroll } from '@/components/InfiniteScroll'
 import { tmdbAPI } from '@/lib/tmdb'
-import { Search, Filter, X, TrendingUp } from 'lucide-react'
+import { Search, Filter, X, TrendingUp, Film, Tv } from 'lucide-react'
 import { motion } from 'framer-motion'
 import useSWR from 'swr'
 
@@ -18,19 +18,46 @@ export default function SearchComponent() {
   const query = searchParams.get('q')
   const [searchQuery, setSearchQuery] = useState(query || '')
   const [currentPage, setCurrentPage] = useState(1)
-  const [allMovies, setAllMovies] = useState([])
+  const [allResults, setAllResults] = useState([])
   const [loadingMore, setLoadingMore] = useState(false)
+  const [searchType, setSearchType] = useState('all') // 'all', 'movie', 'tv'
   const { data: session } = useSession()
 
+  const searchFunction = async (query, page) => {
+    if (searchType === 'movie') {
+      return await tmdbAPI.searchMovies(query, page)
+    } else if (searchType === 'tv') {
+      return await tmdbAPI.searchTVShows(query, page)
+    } else {
+      // Search both movies and TV shows
+      const [movieResults, tvResults] = await Promise.all([
+        tmdbAPI.searchMovies(query, page),
+        tmdbAPI.searchTVShows(query, page)
+      ])
+      
+      // Combine and sort by popularity
+      const combined = [
+        ...movieResults.results.map(item => ({ ...item, media_type: 'movie' })),
+        ...tvResults.results.map(item => ({ ...item, media_type: 'tv' }))
+      ].sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
+      
+      return {
+        results: combined,
+        total_results: movieResults.total_results + tvResults.total_results,
+        total_pages: Math.max(movieResults.total_pages, tvResults.total_pages)
+      }
+    }
+  }
+
   const { data, error, mutate } = useSWR(
-    query ? ['search', query, currentPage] : null,
-    () => tmdbAPI.searchMovies(query, currentPage),
+    query ? ['search', query, currentPage, searchType] : null,
+    () => searchFunction(query, currentPage),
     {
       onSuccess: (data) => {
         if (currentPage === 1) {
-          setAllMovies(data.results)
+          setAllResults(data.results)
         } else {
-          setAllMovies(prev => [...prev, ...data.results])
+          setAllResults(prev => [...prev, ...data.results])
         }
         setLoadingMore(false)
       },
@@ -41,9 +68,9 @@ export default function SearchComponent() {
   useEffect(() => {
     if (query) {
       setCurrentPage(1)
-      setAllMovies([])
+      setAllResults([])
     }
-  }, [query])
+  }, [query, searchType])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -77,7 +104,7 @@ export default function SearchComponent() {
             className="text-center mb-8"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              {query ? `Search Results` : 'Search Movies'}
+              {query ? `Search Results` : 'Search Movies & TV Shows'}
             </h1>
             {query && (
               <p className="text-xl text-gray-300">
@@ -98,7 +125,7 @@ export default function SearchComponent() {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
-                placeholder="Search movies, actors, directors..."
+                placeholder="Search movies, TV shows, actors, directors..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-20 py-4 bg-gray-800/80 backdrop-blur-sm border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-gold focus:border-cinema-gold transition-all duration-200"
@@ -122,6 +149,40 @@ export default function SearchComponent() {
               </div>
             </div>
           </motion.form>
+
+          {/* Search Type Filter */}
+          {query && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex justify-center mt-6"
+            >
+              <div className="flex bg-gray-800/50 rounded-lg p-1">
+                {[
+                  { value: 'all', label: 'All' },
+                  { value: 'movie', label: 'Movies' },
+                  { value: 'tv', label: 'TV Shows' }
+                ].map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => {
+                      setSearchType(type.value)
+                      setCurrentPage(1)
+                      setAllResults([])
+                    }}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                      searchType === type.value
+                        ? 'bg-cinema-gold text-black'
+                        : 'text-gray-300 hover:text-white'
+                    }`}
+                  >
+                    {type.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </section>
 
@@ -137,7 +198,7 @@ export default function SearchComponent() {
                 loadMore={loadMoreMovies}
                 loading={loadingMore}
               >
-                {allMovies.length > 0 ? (
+                {allResults.length > 0 ? (
                   <>
                     <div className="flex items-center justify-between mb-8">
                       <h2 className="text-2xl font-bold text-white">
@@ -150,16 +211,19 @@ export default function SearchComponent() {
                     </div>
                     
                     <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-6">
-                      {allMovies.map((movie, index) => (
-                        <motion.div
-                          key={`${movie.id}-${index}`}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                        >
-                          <MovieCard movie={movie} showFavorite={!!session} />
-                        </motion.div>
-                      ))}
+                      {allResults.map((item, index) => {
+                        const itemType = item.media_type || (searchType === 'tv' ? 'tv' : 'movie')
+                        return (
+                          <motion.div
+                            key={`${item.id}-${index}-${itemType}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                          >
+                            <MovieCard movie={item} showFavorite={!!session} type={itemType} />
+                          </motion.div>
+                        )
+                      })}
                     </div>
                   </>
                 ) : data ? (
@@ -169,7 +233,7 @@ export default function SearchComponent() {
                       No results found
                     </h3>
                     <p className="text-gray-400 mb-6">
-                      We couldn&apos;t find any movies matching &quot;{query}&quot;
+                      We couldn&apos;t find any {searchType === 'all' ? 'content' : searchType === 'movie' ? 'movies' : 'TV shows'} matching &quot;{query}&quot;
                     </p>
                     <button
                       onClick={clearSearch}
@@ -193,15 +257,15 @@ export default function SearchComponent() {
             >
               <div className="text-6xl mb-6">🎬</div>
               <h2 className="text-3xl font-bold text-white mb-4">
-                Discover Your Next Favorite Movie
+                Discover Your Next Favorite Content
               </h2>
               <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-                Search through millions of movies, find detailed information, and add them to your watchlist.
+                Search through millions of movies and TV shows, find detailed information, and add them to your favorites.
               </p>
               
               {/* Popular Searches */}
               <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
-                {['Avengers', 'Inception', 'The Dark Knight', 'Interstellar', 'Pulp Fiction'].map((term) => (
+                {['Avengers', 'Breaking Bad', 'The Dark Knight', 'Stranger Things', 'Game of Thrones'].map((term) => (
                   <button
                     key={term}
                     onClick={() => {
