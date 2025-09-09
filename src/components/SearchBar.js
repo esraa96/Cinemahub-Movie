@@ -216,7 +216,7 @@ export function SearchBar({ className = '' }) {
 
             {!loading && suggestions.length === 0 && query.length > 2 && (
               <div className="p-4 text-center text-gray-400">
-                <p className="text-sm">No movies found for &quot;{query}&quot;</p>
+                <p className="text-sm">No movies found for &ldquo;{query}&rdquo;</p>
                 <button
                   onClick={() => handleSearch()}
                   className="mt-2 text-yellow-500 hover:text-yellow-400 text-sm transition-colors"

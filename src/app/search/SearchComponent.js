@@ -108,7 +108,7 @@ export default function SearchComponent() {
             </h1>
             {query && (
               <p className="text-xl text-gray-300">
-                Found {data?.total_results || 0} results for &quot;{query}&quot;
+                Found {data?.total_results || 0} results for &ldquo;{query}&rdquo;
               </p>
             )}
           </motion.div>
@@ -233,7 +233,7 @@ export default function SearchComponent() {
                       No results found
                     </h3>
                     <p className="text-gray-400 mb-6">
-                      We couldn&apos;t find any {searchType === 'all' ? 'content' : searchType === 'movie' ? 'movies' : 'TV shows'} matching &quot;{query}&quot;
+                      We couldn&rsquo;t find any {searchType === 'all' ? 'content' : searchType === 'movie' ? 'movies' : 'TV shows'} matching &ldquo;{query}&rdquo;
                     </p>
                     <button
                       onClick={clearSearch}
