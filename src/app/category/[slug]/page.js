@@ -77,46 +77,39 @@ export default function CategoryPage() {
   
   if (!config) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-4">Category Not Found</h1>
-          <p className="text-gray-400">The requested category does not exist.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Category Not Found</h1>
+          <p className="text-gray-600 dark:text-gray-400">The requested category does not exist.</p>
         </div>
       </div>
     )
   }
 
+  const categoryKey = !isSearching ? [slug, currentPage] : null
+  const searchKey = isSearching && searchQuery ? ['search', slug, searchQuery, currentPage] : null
+
   const { data, error, mutate } = useSWR(
-    !isSearching ? [slug, currentPage] : null,
-    !isSearching ? () => config.fetchFunction(currentPage) : null,
-    {
-      onSuccess: (data) => {
-        if (currentPage === 1) {
-          setItems(data.results)
-        } else {
-          setItems(prev => [...prev, ...data.results])
-        }
-        setLoadingMore(false)
-      },
-      onError: () => setLoadingMore(false)
-    }
+    categoryKey,
+    categoryKey ? () => config.fetchFunction(currentPage) : null
   )
 
   const { data: searchData, error: searchError } = useSWR(
-    isSearching && searchQuery ? ['search', slug, searchQuery, currentPage] : null,
-    isSearching && searchQuery ? () => config.searchFunction(searchQuery, currentPage) : null,
-    {
-      onSuccess: (data) => {
-        if (currentPage === 1) {
-          setItems(data.results)
-        } else {
-          setItems(prev => [...prev, ...data.results])
-        }
-        setLoadingMore(false)
-      },
-      onError: () => setLoadingMore(false)
-    }
+    searchKey,
+    searchKey ? () => config.searchFunction(searchQuery, currentPage) : null
   )
+
+  useEffect(() => {
+    const currentData = isSearching ? searchData : data
+    if (currentData) {
+      if (currentPage === 1) {
+        setItems(currentData.results)
+      } else {
+        setItems(prev => [...prev, ...currentData.results])
+      }
+      setLoadingMore(false)
+    }
+  }, [data, searchData, currentPage, isSearching])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -145,30 +138,30 @@ export default function CategoryPage() {
   const IconComponent = config.icon
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-3 mb-6">
             <IconComponent className="text-cinema-gold" size={32} />
-            <h1 className="text-3xl sm:text-4xl font-bold text-white">{config.title}</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">{config.title}</h1>
           </div>
 
           {/* Search Bar */}
           <form onSubmit={handleSearch} className="flex max-w-md">
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={20} />
               <input
                 type="text"
                 placeholder={`Search ${config.title.toLowerCase()}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-l-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-gold focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-l-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cinema-gold focus:border-transparent shadow-sm"
               />
             </div>
             <button
               type="submit"
-              className="px-6 py-3 bg-cinema-gold hover:bg-yellow-500 text-black font-semibold rounded-r-xl transition-colors duration-200"
+              className="px-6 py-3 bg-cinema-gold hover:bg-yellow-500 text-black font-semibold rounded-r-xl transition-colors duration-200 shadow-sm"
             >
               Search
             </button>
@@ -176,7 +169,7 @@ export default function CategoryPage() {
 
           {isSearching && (
             <div className="mt-4 flex items-center justify-between">
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 {searchQuery ? `Search results for "${searchQuery}"` : 'All results'}
               </p>
               <button
@@ -187,7 +180,7 @@ export default function CategoryPage() {
                   setItems([])
                   mutate()
                 }}
-                className="text-cinema-gold hover:text-yellow-400 transition-colors duration-200"
+                className="text-cinema-gold hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors duration-200 font-medium"
               >
                 Clear Search
               </button>
@@ -216,7 +209,7 @@ export default function CategoryPage() {
             </div>
           ) : currentData && !loadingMore ? (
             <div className="text-center py-12">
-              <p className="text-gray-400">
+              <p className="text-gray-600 dark:text-gray-400">
                 {isSearching ? 'No results found for your search.' : 'No items found.'}
               </p>
             </div>
@@ -228,7 +221,7 @@ export default function CategoryPage() {
         {/* Page Info */}
         {currentData && (
           <div className="mt-8 text-center">
-            <div className="flex items-center justify-center space-x-2 text-sm text-gray-400">
+            <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
               <Filter size={16} />
               <span>Page {currentPage} of {Math.min(currentData.total_pages, 500)}</span>
               <span>•</span>
