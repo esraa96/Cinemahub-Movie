@@ -74,7 +74,45 @@ export default function CategoryPage() {
   const { data: session } = useSession()
 
   const config = categoryConfig[slug]
-  
+
+  // Always call hooks before any early returns
+  const { data, error, mutate } = useSWR(
+    config ? [slug, currentPage, 'category'] : null,
+    () => config?.fetchFunction(currentPage),
+    {
+      revalidateOnFocus: false
+    }
+  )
+
+  const { data: searchData, error: searchError } = useSWR(
+    config && searchQuery ? ['search', slug, searchQuery, currentPage] : null,
+    () => config?.searchFunction(searchQuery, currentPage),
+    {
+      revalidateOnFocus: false
+    }
+  )
+
+  useEffect(() => {
+    if (!config) return
+    const currentData = isSearching ? searchData : data
+    if (currentData && !isSearching && data) {
+      if (currentPage === 1) {
+        setItems(data.results)
+      } else {
+        setItems(prev => [...prev, ...data.results])
+      }
+      setLoadingMore(false)
+    } else if (currentData && isSearching && searchData && searchQuery) {
+      if (currentPage === 1) {
+        setItems(searchData.results)
+      } else {
+        setItems(prev => [...prev, ...searchData.results])
+      }
+      setLoadingMore(false)
+    }
+  }, [data, searchData, currentPage, isSearching, searchQuery, config])
+
+  // Early return after all hooks
   if (!config) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950 flex items-center justify-center">
@@ -85,31 +123,6 @@ export default function CategoryPage() {
       </div>
     )
   }
-
-  const categoryKey = !isSearching ? [slug, currentPage] : null
-  const searchKey = isSearching && searchQuery ? ['search', slug, searchQuery, currentPage] : null
-
-  const { data, error, mutate } = useSWR(
-    categoryKey,
-    categoryKey ? () => config.fetchFunction(currentPage) : null
-  )
-
-  const { data: searchData, error: searchError } = useSWR(
-    searchKey,
-    searchKey ? () => config.searchFunction(searchQuery, currentPage) : null
-  )
-
-  useEffect(() => {
-    const currentData = isSearching ? searchData : data
-    if (currentData) {
-      if (currentPage === 1) {
-        setItems(currentData.results)
-      } else {
-        setItems(prev => [...prev, ...currentData.results])
-      }
-      setLoadingMore(false)
-    }
-  }, [data, searchData, currentPage, isSearching])
 
   const handleSearch = (e) => {
     e.preventDefault()
